@@ -19,14 +19,30 @@
 # limitations under the License.
 #
 
-ohai 'reload_nginx' do
-  plugin 'nginx'
-  action :nothing
-end
+begin
 
-ohai_plugin 'nginx' do
-  resource :template
-  source_file 'ohai_plugin.rb'
+  # Run this if ohai is > 4.0.0
+  ohai_plugin 'nginx' do
+    resource :template
+    source_file 'ohai_plugin.rb'
+  end
+
+rescue
+
+  # Compatibility with older versions of the ohai cookbook
+  ohai 'reload_nginx' do
+    plugin 'nginx'
+    action :nothing
+  end
+
+  template "#{node['ohai']['plugin_path']}/nginx.rb" do
+    source 'plugins/nginx.rb.erb'
+    owner  'root'
+    group  node['root_group']
+    mode   '0755'
+    notifies :reload, 'ohai[reload_nginx]', :immediately
+  end
+
 end
 
 include_recipe 'ohai::default'
