@@ -24,7 +24,7 @@ begin
   # Run this if ohai is > 4.0.0
   ohai_plugin 'nginx' do
     resource :template
-    source_file 'ohai_plugin.rb'
+    source_file 'ohai_plugin.rb.erb'
   end
 
 rescue
@@ -36,7 +36,7 @@ rescue
   end
 
   template "#{node['ohai']['plugin_path']}/nginx.rb" do
-    source 'plugins/nginx.rb.erb'
+    source 'ohai_plugin.rb.erb'
     owner  'root'
     group  node['root_group']
     mode   '0755'
